@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "catshop",
+    "slug": "catshop",
+    "privacy": "public",
+    "sdkVersion": "35.0.0",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.sungsojaejin.catshop",
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "위치정보 사용을 필요로 합니다."
+      },
+      "config" : {
+      }
+    }
+    ,"android": {
+      "package": "com.sungsojaejin.catshop",
+      "config": { 
+        "googleMaps": { "apiKey": "AIzaSyBTTmCzx54REsO4Y6EfRfycSvo3Q6dIHLI" }
+      },
+      "permissions": [
+        "CALL_PHONE",
+        "DIAL_PHONE"
+      ]
+    }
+  }
+}
