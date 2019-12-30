@@ -1,10 +1,11 @@
 import { createAppContainer} from "react-navigation";
 import { createStackNavigator } from 'react-navigation-stack'
-import HomeScreen from "./HomeScreen";
-import ProfileScreen from "./ProfileScreen";
-import MapScreen from "./MapScreen";
-import LoginScreen from "./LoginScreen";
-import PlusScreen from "./PlusScreen";
+import HomeScreen from "./screen/HomeScreen";
+import ProfileScreen from "./screen/ProfileScreen";
+import MapScreen from "./screen/MapScreen";
+import LoginScreen from "./screen/LoginScreen";
+import PlusScreen from "./screen/PlusScreen";
+import ShopScreen from "./screen/ShopScreen";
 
 const App = createStackNavigator(
   {
@@ -13,6 +14,7 @@ const App = createStackNavigator(
     Map: {screen: MapScreen},
     Login: {screen: LoginScreen},
     Plus: {screen: PlusScreen},
+    Shop: {screen: ShopScreen},
   },{ initialRouteName: "Home", headerMode: "none"}
 );
 
