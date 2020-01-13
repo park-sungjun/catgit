@@ -16,6 +16,8 @@ import {
 } from "react-native";
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import * as Permissions from 'expo-permissions';
+import axios from 'axios';
+import { Dimensions } from 'react-native'
 const MyStatusBar = ({ backgroundColor, ...props }) => (
     <View style={[styles.statusBar, { backgroundColor }]}>
         <StatusBar translucent={true} backgroundColor={backgroundColor} {...props} />
@@ -31,11 +33,14 @@ export default class MapScreen extends Component {
                 longitude: 127.024217,
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421
-            }
+            },
+            data: []
         };
     }
 
     componentDidMount() {
+        axios.get('http://45.119.146.149:5005/store_information')
+            .then(response => { this.setState({ data: response.data }) })
         if (Platform.OS == 'ios') {
             this.__reqpermission();
         }
@@ -83,6 +88,8 @@ export default class MapScreen extends Component {
 
     render() {
         const { navigation } = this.props;
+        const screenWidth = Math.round(Dimensions.get('window').width);
+        const view = [];
         return (
             <View style={{ flex: 1, }}>
                 <MyStatusBar styles={styles.statusBar} />
@@ -114,9 +121,9 @@ export default class MapScreen extends Component {
                                     latitude: this.state.mapRegion.latitude,
                                     longitude: this.state.mapRegion.longitude,
                                 }}
-                                title={"marker.title"}
-                                description={"desss"}
+                                title={"내위치"}
                             />
+                            {printmapmarker(this.state.data)}
                         </MapView>
                         <TouchableOpacity style={{ position: 'absolute', }} onPress={() => navigation.navigate('Plus')}>
                             <Image source={require('../img/map.png')}
@@ -125,33 +132,94 @@ export default class MapScreen extends Component {
                                     borderRadius: 400 / 2
                                 }} />
                         </TouchableOpacity>
+                        <View style={styles.container}>
+                            {this.state.data.map((value) =>
+                                <View key={value.idx} style={{ borderBottomWidth: 0.3, borderBottomColor: '#DDDDDD' }}>
+                                    <TouchableOpacity onPress={() => navigation.navigate('Shop', { value: value })}>
+                                        <View style={{ flexDirection: 'row', }}>
+                                            <View style={{ width: screenWidth - 90 }}>
+                                                <Text style={{ paddingLeft: 10, fontSize: 20, paddingTop: 7, fontWeight: 'bold' }}>{value.name}</Text>
+                                                <Text style={{ paddingLeft: 10, fontSize: 10, paddingTop: 2, }}>{value.location_old_kor}</Text>
+                                                <Text style={{ paddingLeft: 10, fontSize: 10, paddingTop: 2, paddingBottom: 7 }}>{value.opening_hours}</Text>
+                                            </View>
+                                            <View style={{ flex: 1, flexDirection: "row-reverse", paddingTop: 15, paddingLeft: 10 }}>
+                                                <Image
+                                                    style={{ width: 70, height: 70, }}
+                                                    source={{ uri: 'http://45.119.146.149:8008/img_files/pre/' + value.name_nospace + '_1.jpg' }}
+                                                />
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+                        </View>
                     </ScrollView>
                     <View style={{
                         height: 50, flexDirection: 'row', backgroundColor: "white",
                         borderTopWidth: 0.7, borderTopColor: '#00CC00',
                     }}>
-                        <View style={{ flex: 1 / 3, flexDirection: 'column', alignItems: "center" }}>
-                            <TouchableOpacity onPress={() => this.componentDidMount()}>
-                                <Image source={require('../img/map.png')}
-                                    style={styles.img} />
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{ flex: 1 / 3, flexDirection: 'column', alignItems: "center" }}>
+                        <View style={{ flex: 1 / 5, flexDirection: 'column', alignItems: "center" }}>
                             <TouchableOpacity onPress={() => navigation.navigate('Home')}>
                                 <Image source={require('../img/home.png')}
                                     style={styles.img} />
+                                <Text>Home</Text>
                             </TouchableOpacity>
                         </View>
-                        <View style={{ flex: 1 / 3, flexDirection: 'column', alignItems: "center" }}>
-                            <TouchableOpacity onPress={() => this.componentDidMount()}>
+                        <View style={{ flex: 1 / 5, flexDirection: 'column', alignItems: "center" }}>
+                            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                                <Image source={require('../img/home.png')}
+                                    style={styles.img} />
+                                <Text style={{marginRight:5,}}>내정보</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ flex: 1 / 5, flexDirection: 'column', alignItems: "center" }}>
+                            <TouchableOpacity onPress={() => navigation.navigate('Map')}>
+                                <Image source={require('../img/map.png')}
+                                    style={{backgroundColor: "white",
+                                    height: 20,
+                                    width: 20,
+                                    marginTop: 7,
+                                    marginLeft: 2}} />
+                                <Text>지도 </Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ flex: 1 / 5, flexDirection: 'column', alignItems: "center" }}>
+                            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                                 <Image source={require('../img/plus.png')}
                                     style={styles.img} />
+                                <Text>관심샵</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ flex: 1 / 5, flexDirection: 'column', alignItems: "center" }}>
+                            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+                                <Image source={require('../img/plus.png')}
+                                    style={styles.img} />
+                                <Text>더보기</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 </SafeAreaView>
             </View>
         );
+        function printmapmarker(data) {
+            const shoploc = data.map((value) =>
+                <li key={value.idx} data={value} />
+            );
+            if (shoploc[0] != null) {
+                for (var i = 0; i < 10; i++) {
+                    view.push(
+                        <MapView.Marker
+                            coordinate={{
+                                latitude: Number(shoploc[i].props.data.coordinate_latitude),
+                                longitude: Number(shoploc[i].props.data.coordinate_longitude),
+                            }}
+                            title={shoploc[i].props.data.name}
+                        />
+                    )
+                }
+            }
+            return view;
+        }
     }
 }
 
@@ -192,8 +260,9 @@ const styles = StyleSheet.create({
     },
     img: {
         backgroundColor: "white",
-        height: 30,
-        width: 30,
-        marginTop: 10,
+        height: 20,
+        width: 20,
+        marginTop: 7,
+        marginLeft: 9,
     },
 });

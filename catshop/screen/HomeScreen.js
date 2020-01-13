@@ -10,6 +10,7 @@ import {
     Image,
     StatusBar,
     SafeAreaView,
+    ListItem,
 } from 'react-native';
 import * as Permissions from 'expo-permissions';
 import { TouchableHighlight } from "react-native-gesture-handler";
@@ -17,6 +18,7 @@ import Swiper from 'react-native-swiper';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { Dimensions } from 'react-native'
 import axios from 'axios';
+import { Updates } from "expo";
 
 const MyStatusBar = ({ backgroundColor, ...props }) => (    // statusbar 스타일
     <View style={[styles.statusBar, { backgroundColor }]}>
@@ -55,11 +57,11 @@ async function getCallAsync() { // 전화권한
 export default class HomeScreen extends Component {
     constructor(props) {
         super(props);
-        this.state = { data : [] };
+        this.state = { data: [] };
     }
     componentDidMount() {
-       axios.get('http://45.119.146.149:5005/store_information')
-       .then(response => { this.setState({ data: response.data })})
+        axios.get('http://45.119.146.149:5005/store_information')
+            .then(response => { this.setState({ data: response.data }) })
     }
     _onPress(item) {
         if (item.id == 1) {
@@ -75,10 +77,11 @@ export default class HomeScreen extends Component {
     }
     render() {
         const { navigation } = this.props;  // 화면이동 모듈
-        console.log(this.state.data);
+        const screenWidth = Math.round(Dimensions.get('window').width);
+        const view = [];
         return (
             <View style={{ flex: 1, }}>
-                <MyStatusBar styles={styles.statusBar}/>
+                <MyStatusBar styles={styles.statusBar} />
                 <SafeAreaView style={{ flex: 1, flexDirection: 'column', backgroundColor: "white", }}>
                     <View style={{
                         height: 50, flexDirection: 'row', paddingRight: 10, paddingTop: 5,
@@ -104,7 +107,7 @@ export default class HomeScreen extends Component {
                         <View style={{ height: 250, }}>
                             <Swiper style={styles.wrapper} showsButtons={true}>
                                 <Image source={require('../img/banner1.png')}
-                                    style={{ height: 250, width: Dimensions.get('window').width,  }} />
+                                    style={{ height: 250, width: Dimensions.get('window').width, }} />
                                 <View style={styles.slide2}>
                                     <Text style={styles.text}>Beautiful</Text>
                                 </View>
@@ -122,43 +125,103 @@ export default class HomeScreen extends Component {
                             </Text>
                         </View>
                         <View style={styles.container}>
-                            { this.state.data.map(( value ) => 
-                                <View key={value.name} style = {{ borderBottomWidth: 0.3, borderBottomColor: '#DDDDDD' }}>
-                                    <TouchableOpacity onPress={() => navigation.navigate('Shop',{name:value.name})}>
-                                    <Text style={{paddingLeft: 10, fontSize: 15, paddingTop: 7, fontWeight: 'bold'}}>{value.name}</Text>
-                                    <Text style={{paddingLeft: 10, fontSize: 10, paddingTop: 2, }}>{value.road_name_address_kor}</Text>
-                                    <Text style={{paddingLeft: 10, fontSize: 10, paddingTop: 2, paddingBottom: 7}}>{value.opening_hours}</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            )}
+                            {printinform(this.state.data)}
                         </View>
                     </ScrollView>
                     <View style={{
                         height: 50, flexDirection: 'row', backgroundColor: "white",
                         borderTopWidth: 0.7, borderTopColor: '#00CC00',
                     }}>
-                        <View style={{ flex: 1 / 3, flexDirection: 'column', alignItems: "center" }}>
-                            <TouchableOpacity onPress={() => navigation.navigate('Map')}>
-                                <Image source={require('../img/map.png')}
-                                    style={ styles.img } />
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{ flex: 1 / 3, flexDirection: 'column', alignItems: "center" }}>
+                        <View style={{ flex: 1 / 5, flexDirection: 'column', alignItems: "center" }}>
                             <TouchableOpacity onPress={() => navigation.navigate('Home')}>
                                 <Image source={require('../img/home.png')}
-                                    style={ styles.img } />
+                                    style={styles.img} />
+                                <Text>Home</Text>
                             </TouchableOpacity>
                         </View>
-                        <View style={{ flex: 1 / 3, flexDirection: 'column', alignItems: "center" }}>
+                        <View style={{ flex: 1 / 5, flexDirection: 'column', alignItems: "center" }}>
+                            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                                <Image source={require('../img/home.png')}
+                                    style={styles.img} />
+                                <Text style={{marginRight:5,}}>내정보</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ flex: 1 / 5, flexDirection: 'column', alignItems: "center" }}>
                             <TouchableOpacity onPress={() => navigation.navigate('Map')}>
+                                <Image source={require('../img/map.png')}
+                                    style={{backgroundColor: "white",
+                                    height: 20,
+                                    width: 20,
+                                    marginTop: 7,
+                                    marginLeft: 2}} />
+                                <Text>지도 </Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ flex: 1 / 5, flexDirection: 'column', alignItems: "center" }}>
+                            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                                 <Image source={require('../img/plus.png')}
-                                    style={ styles.img } />
+                                    style={styles.img} />
+                                <Text>관심샵</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ flex: 1 / 5, flexDirection: 'column', alignItems: "center" }}>
+                            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+                                <Image source={require('../img/plus.png')}
+                                    style={styles.img} />
+                                <Text>더보기</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 </SafeAreaView>
             </View>
         );
+        function printinform(data){
+            const shopitem = data.map((value) =>
+                <li key={value.idx} data={value} />
+            );
+            if (shopitem[0] != null) {
+                view.push(
+                    <View>
+                        <TouchableOpacity onPress={() => navigation.navigate('Shop', { value: shopitem[0].props.data })}>
+                            <View style={{ flexDirection: 'row', borderBottomWidth: 0.3, borderBottomColor: '#DDDDDD' }}>
+                                <View style={{ width: screenWidth - 90 }}>
+                                    <Text style={{ paddingLeft: 10, fontSize: 20, paddingTop: 7, fontWeight: 'bold' }}>{shopitem[0].props.data.name}</Text>
+                                    <Text style={{ paddingLeft: 10, fontSize: 10, paddingTop: 2, }}>{shopitem[0].props.data.location_old_kor}</Text>
+                                    <Text style={{ paddingLeft: 10, fontSize: 10, paddingTop: 2, paddingBottom: 7 }}>{shopitem[0].props.data.opening_hours}</Text>
+                                </View>
+                                <View style={{ flex: 1, flexDirection: "row-reverse", paddingTop: 15, paddingLeft: 10 }}>
+                                    <Image
+                                        style={{ width: 70, height: 70, }}
+                                        source={{ uri: 'http://45.119.146.149:8008/img_files/pre/' + shopitem[0].props.data.name_nospace + '_1.jpg' }}
+                                    />
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate('Shop', { value: shopitem[1].props.data })}>
+                            <View style={{ flexDirection: 'row', borderBottomWidth: 0.3, borderBottomColor: '#DDDDDD' }}>
+                                <View style={{ width: screenWidth - 90 }}>
+                                    <Text style={{ paddingLeft: 10, fontSize: 20, paddingTop: 7, fontWeight: 'bold' }}>{shopitem[1].props.data.name}</Text>
+                                    <Text style={{ paddingLeft: 10, fontSize: 10, paddingTop: 2, }}>{shopitem[1].props.data.location_old_kor}</Text>
+                                    <Text style={{ paddingLeft: 10, fontSize: 10, paddingTop: 2, paddingBottom: 7 }}>{shopitem[1].props.data.opening_hours}</Text>
+                                </View>
+                                <View style={{ flex: 1, flexDirection: "row-reverse", paddingTop: 15, paddingLeft: 10 }}>
+                                    <Image
+                                        style={{ width: 70, height: 70, }}
+                                        source={{ uri: 'http://45.119.146.149:8008/img_files/pre/' + shopitem[1].props.data.name_nospace + '_1.jpg' }}
+                                    />
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate('Map')}>
+                            <View style={{ flex: 1, alignItems: "center", borderBottomWidth: 0.3, borderBottomColor: '#DDDDDD' }}>
+                                <Text style={{ fontSize: 20, paddingTop: 7, paddingBottom: 7, fontWeight: 'bold' }}>더보기</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                )      
+            }
+            return view;
+        }
     }
 }
 
@@ -166,7 +229,7 @@ const height = getStatusBarHeight();
 const styles = StyleSheet.create({
     statusBar: {
         height: height,
-        backgroundColor:"white",
+        backgroundColor: "white",
     },
     name: {
         fontSize: 20,
@@ -199,9 +262,10 @@ const styles = StyleSheet.create({
     },
     img: {
         backgroundColor: "white",
-        height: 30,
-        width: 30,
-        marginTop: 10,
+        height: 20,
+        width: 20,
+        marginTop: 7,
+        marginLeft: 9,
     },
     title: {
         fontSize: 32,

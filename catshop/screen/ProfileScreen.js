@@ -82,22 +82,43 @@ export default class ProfileScreen extends Component {
                         height: 50, flexDirection: 'row', backgroundColor: "white",
                         borderTopWidth: 0.7, borderTopColor: '#00CC00',
                     }}>
-                        <View style={{ flex: 1 / 3, flexDirection: 'column', alignItems: "center" }}>
-                            <TouchableOpacity onPress={() => navigation.navigate('Map')}>
-                                <Image source={require('../img/map.png')}
-                                    style={ styles.img } />
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{ flex: 1 / 3, flexDirection: 'column', alignItems: "center" }}>
+                        <View style={{ flex: 1 / 5, flexDirection: 'column', alignItems: "center" }}>
                             <TouchableOpacity onPress={() => navigation.navigate('Home')}>
                                 <Image source={require('../img/home.png')}
-                                    style={ styles.img } />
+                                    style={styles.img} />
+                                <Text>Home</Text>
                             </TouchableOpacity>
                         </View>
-                        <View style={{ flex: 1 / 3, flexDirection: 'column', alignItems: "center" }}>
+                        <View style={{ flex: 1 / 5, flexDirection: 'column', alignItems: "center" }}>
+                            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                                <Image source={require('../img/home.png')}
+                                    style={styles.img} />
+                                <Text style={{marginRight:5,}}>내정보</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ flex: 1 / 5, flexDirection: 'column', alignItems: "center" }}>
                             <TouchableOpacity onPress={() => navigation.navigate('Map')}>
+                                <Image source={require('../img/map.png')}
+                                    style={{backgroundColor: "white",
+                                    height: 20,
+                                    width: 20,
+                                    marginTop: 7,
+                                    marginLeft: 2}} />
+                                <Text>지도 </Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ flex: 1 / 5, flexDirection: 'column', alignItems: "center" }}>
+                            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                                 <Image source={require('../img/plus.png')}
-                                    style={ styles.img } />
+                                    style={styles.img} />
+                                <Text>관심샵</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ flex: 1 / 5, flexDirection: 'column', alignItems: "center" }}>
+                            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+                                <Image source={require('../img/plus.png')}
+                                    style={styles.img} />
+                                <Text>더보기</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -115,8 +136,9 @@ const styles = StyleSheet.create({
     },
     img: {
         backgroundColor: "white",
-        height: 30,
-        width: 30,
-        marginTop: 10,
+        height: 20,
+        width: 20,
+        marginTop: 7,
+        marginLeft: 9,
     },
 });
